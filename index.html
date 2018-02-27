@@ -120,6 +120,25 @@
     appendTriangle(triangleOne, "#b22222");
     appendTriangle(triangleTwo, "#b22222");
     appendTriangle(triangleThree, "#b22222");
+
+    var rawData;
+    var majorData;
+
+    function parseLine(line){
+      return {
+        Title: line["OCC_TITLE"],
+        Group: line["OCC_GROUP"],
+        Total_Emp: line["TOT_EMP"]
+      };
+    }
+
+    d3.csv("2016_employment.csv", parseLine, function(error, data) {
+      rawData = data;
+
+      majorData = data.filter(function (obj) {
+        return obj.Group == "major";
+      })
+    })
   </script>
 </body>
 
