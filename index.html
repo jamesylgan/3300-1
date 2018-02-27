@@ -1,4 +1,5 @@
 <html>
+
 <head>
   <link href="https://fonts.googleapis.com/css?family=Barlow+Condensed" rel="stylesheet">
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/default.min.css">
@@ -7,10 +8,20 @@
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
 </head>
 <style>
-  body { font-family: 'Barlow Condensed', Calibri, sans-serif; }
-  svg { border: solid #ccc 1px; }
-  path.country { fill: #ccc; stroke: #888; }
+  body {
+    font-family: 'Barlow Condensed', Calibri, sans-serif;
+  }
+
+  svg {
+    border: solid #ccc 1px;
+  }
+
+  path.country {
+    fill: #ccc;
+    stroke: #888;
+  }
 </style>
+
 <body>
   <svg id="bar_graph" width=1000 height=1000 style="background-color: #FFE4E1;">
   </svg>
@@ -28,13 +39,12 @@
       var gradient;
       if (orientation == "vertical") {
         gradient = defs.append("linearGradient")
-            .attr("id", id)
-            .attr("x1", "0%")
-            .attr("x2", "0%")
-            .attr("y1", "0%")
-            .attr("y2", "100%");
-      }
-      else if (orientation == "horizontal"){
+          .attr("id", id)
+          .attr("x1", "0%")
+          .attr("x2", "0%")
+          .attr("y1", "0%")
+          .attr("y2", "100%");
+      } else if (orientation == "horizontal") {
         gradient = defs.append("linearGradient")
           .attr("id", id)
           .attr("x1", "0%")
@@ -44,16 +54,16 @@
       }
 
       gradient.append("stop")
-         .attr('class', 'start')
-         .attr("offset", "0%")
-         .attr("stop-color", startColor)
-         .attr("stop-opacity", 1);
+        .attr('class', 'start')
+        .attr("offset", "0%")
+        .attr("stop-color", startColor)
+        .attr("stop-opacity", 1);
 
       gradient.append("stop")
-         .attr('class', 'end')
-         .attr("offset", "100%")
-         .attr("stop-color", endColor)
-         .attr("stop-opacity", 1);
+        .attr('class', 'end')
+        .attr("offset", "100%")
+        .attr("stop-color", endColor)
+        .attr("stop-opacity", 1);
     }
 
     createGradient("#FFF5EE", "#b22222", "horizontal", "svgGradient");
@@ -61,45 +71,56 @@
     createGradient("#FFF5EE", "#b22222", "vertical", "flippedVertical");
 
     svg.append("rect").attr("x", 120).attr("y", 410).attr("height", 80).attr("width", 30)
-    .style("fill", "#FF9B9B").attr("rx", 10).style("stroke", "white").style("stroke-width", 1.5);
+      .style("fill", "#FF9B9B").attr("rx", 10).style("stroke", "white").style("stroke-width", 1.5);
     svg.append("rect").attr("x", 120).attr("y", 240).attr("height", 250).attr("width", 30)
-    .style("fill", "#F08080").attr("rx", 10).attr("transform", "translate(30, 0)").attr("rx", 10).style("stroke", "white").style("stroke-width", 1.5);;
+      .style("fill", "#F08080").attr("rx", 10).attr("transform", "translate(30, 0)").attr("rx", 10).style("stroke", "white").style("stroke-width", 1.5);;
     svg.append("rect").attr("x", 120).attr("y", 360).attr("height", 130).attr("width", 30)
-    .style("fill", "#AA3939").attr("rx", 10).attr("transform", "translate(60, 0)").attr("rx", 10).style("stroke", "white").style("stroke-width", 1.5);;
+      .style("fill", "#AA3939").attr("rx", 10).attr("transform", "translate(60, 0)").attr("rx", 10).style("stroke", "white").style("stroke-width", 1.5);;
 
     svg.append("rect").attr("x", 150).attr("y", 510).attr("height", 400).attr("width", 30)
-    .style("fill", "#781C1C").attr("rx", 10).attr("rx", 10).style("stroke", "white").style("stroke-width", 1.5);
+      .style("fill", "#781C1C").attr("rx", 10).attr("rx", 10).style("stroke", "white").style("stroke-width", 1.5);
 
     svg.append("rect")
-          .attr("x",60)
-             .attr("y",480)
-             .attr("width",860)
-             .attr("height",40)
-             .attr("fill", "url(#svgGradient)").style("stroke", "white").style("stroke-width", 1.5);;
+      .attr("x", 60)
+      .attr("y", 480)
+      .attr("width", 860)
+      .attr("height", 40)
+      .attr("fill", "url(#svgGradient)").style("stroke", "white").style("stroke-width", 1.5);;
 
 
     svg.append("rect")
-          .attr("x",60)
-          .attr("y",80)
-          .attr("width",40)
-          .attr("height",420)
-          .attr("fill", "url(#verticalGrad)").style("stroke", "white").style("stroke-width", 1.5);;
+      .attr("x", 60)
+      .attr("y", 80)
+      .attr("width", 40)
+      .attr("height", 420)
+      .attr("fill", "url(#verticalGrad)").style("stroke", "white").style("stroke-width", 1.5);;
 
-          svg.append("rect")
-                .attr("x",60)
-                .attr("y",500)
-                .attr("width",40)
-                .attr("height",420)
-                .attr("fill", "url(#flippedVertical)").style("stroke", "white").style("stroke-width", 1.5);;
+    svg.append("rect")
+      .attr("x", 60)
+      .attr("y", 500)
+      .attr("width", 40)
+      .attr("height", 420)
+      .attr("fill", "url(#flippedVertical)").style("stroke", "white").style("stroke-width", 1.5);;
 
-    var triangleOne = [[900, 450], [970, 500], [900, 550]];
-    var triangleTwo = [[30, 100], [80, 20], [130, 100]];
-    var triangleThree = [[30, 900], [80, 980], [130, 900]];
+    var triangleOne = [
+      [900, 450],
+      [970, 500],
+      [900, 550]
+    ];
+    var triangleTwo = [
+      [30, 100],
+      [80, 20],
+      [130, 100]
+    ];
+    var triangleThree = [
+      [30, 900],
+      [80, 980],
+      [130, 900]
+    ];
     appendTriangle(triangleOne, "#b22222");
     appendTriangle(triangleTwo, "#b22222");
     appendTriangle(triangleThree, "#b22222");
-
-
   </script>
 </body>
+
 </html>
