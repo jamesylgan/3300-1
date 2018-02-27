@@ -135,10 +135,34 @@
     d3.csv("2016_employment.csv", parseLine, function(error, data) {
       rawData = data;
 
+      var allEmployment = data.filter(function (obj) {
+        return obj.Group == "total";
+      })
+
+      var totalEmp = allEmployment[0].Total_Emp;
+
       majorData = data.filter(function (obj) {
         return obj.Group == "major";
       })
-    })
+
+      var mortalityScale = d3.scaleLinear().domain([0, 100]).range([svg.style("height")/2.0-20,20]);
+
+      var occupationTotalScale = d3.scaleBand().domain(majorData.map(function(d) { return d.Title; })).range([100, svg.style("width")-100]);
+
+      svg.append("g")
+      .selectAll("rect")
+      .data(majorData)
+      .enter().append("rect")
+      .attr("x", function(d) { return x1(d.key); })
+      .attr("y", function(d) { return y(d.value); })
+
+
+
+
+
+    });
+
+
   </script>
 </body>
 
