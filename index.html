@@ -135,7 +135,7 @@
         Total_Emp: line["TOT_EMP"]
       };
     }
-    
+
 
     d3.csv("2016_employment.csv", parseLine, function(error, data) {
       rawData = data;
@@ -205,14 +205,6 @@
 
       })
     })
-      //mortData();
-      // var q = d3.queue();
-      // q.defer(mortData);
-      // q.await((function() {
-      //   console.log("running");
-      // for (i = 0; i < majorDataMort.length; i++) {
-      //   relativeMort.push({title: majorDataMort[i].title, rate: (majorDataMort[i].totalFatalities / majorData[i].Total_Emp) * 100000})
-      // }};
 
   </script>
 </body>
