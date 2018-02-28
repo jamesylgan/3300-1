@@ -130,13 +130,7 @@
         group: line["OCC_GROUP"],
         totalEmployment: line["TOT_EMP"]
       };
-
-      majorData = data.filter(function(obj) {
-        return obj.group == "major";
-      });
-
-      mortData();
-    });
+    };
 
     /* ---Data Mgmt Pt2--- */
     var occupations = [];
@@ -193,19 +187,19 @@
       rawData = data;
 
       var allEmployment = data.filter(function(obj) {
-        return obj.Group == "total";
+        return obj.group == "total";
       })
 
-      var totalEmp = allEmployment[0].Total_Emp;
+      var totalEmp = allEmployment[0].totalEmployment;
 
       majorData = data.filter(function(obj) {
-        return obj.Group == "major";
+        return obj.group == "major";
       })
 
       var mortalityScale = d3.scaleLinear().domain([0, 100]).range([svg.style("height") / 2.0 - 20, 20]);
 
       var occupationTotalScale = d3.scaleBand().domain(majorData.map(function(d) {
-        return d.Title;
+        return d.title;
       })).range([100, svg.style("width") - 100]);
 
       svg.append("g")
@@ -219,10 +213,7 @@
           return y(d.value);
         })
 
-
-
-
-
+      mortData();
     });
   </script>
 </body>
