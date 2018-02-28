@@ -1,0 +1,198 @@
+<html>
+
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Barlow+Condensed" rel="stylesheet">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/default.min.css">
+  <script src="https://d3js.org/d3.v4.min.js"></script>
+  <script src="https://d3js.org/topojson.v2.min.js"></script>
+  <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
+</head>
+<style>
+  body {
+    font-family: 'Barlow Condensed', Calibri, sans-serif;
+  }
+
+  svg {
+    border: solid #ccc 1px;
+  }
+
+  path.country {
+    fill: #ccc;
+    stroke: #888;
+  }
+</style>
+
+<body>
+  <svg id="bar_graph" width=1000 height=1000 style="background-color: #FFE4E1;">
+  </svg>
+  <script>
+    var svg = d3.select("#bar_graph");
+    var defs = svg.append("defs");
+
+    function appendTriangle(points, color) {
+      var generator = d3.line();
+      var pathEl = generator(points);
+      svg.append("path").attr("d", pathEl).attr("fill", color);
+    }
+
+    function createGradient(startColor, endColor, orientation, id) {
+      var gradient;
+      if (orientation == "vertical") {
+        gradient = defs.append("linearGradient")
+          .attr("id", id)
+          .attr("x1", "0%")
+          .attr("x2", "0%")
+          .attr("y1", "0%")
+          .attr("y2", "100%");
+      } else if (orientation == "horizontal") {
+        gradient = defs.append("linearGradient")
+          .attr("id", id)
+          .attr("x1", "0%")
+          .attr("x2", "100%")
+          .attr("y1", "0%")
+          .attr("y2", "0%");
+      }
+
+      gradient.append("stop")
+        .attr('class', 'start')
+        .attr("offset", "0%")
+        .attr("stop-color", startColor)
+        .attr("stop-opacity", 1);
+
+      gradient.append("stop")
+        .attr('class', 'end')
+        .attr("offset", "100%")
+        .attr("stop-color", endColor)
+        .attr("stop-opacity", 1);
+    }
+
+    createGradient("#FFF5EE", "#b22222", "horizontal", "svgGradient");
+    createGradient("#b22222", "#FFF5EE", "vertical", "verticalGrad");
+    createGradient("#FFF5EE", "#b22222", "vertical", "flippedVertical");
+
+    svg.append("rect").attr("x", 120).attr("y", 410).attr("height", 80).attr("width", 30)
+      .style("fill", "#FF9B9B").attr("rx", 10).style("stroke", "white").style("stroke-width", 1.5);
+    svg.append("rect").attr("x", 120).attr("y", 240).attr("height", 250).attr("width", 30)
+      .style("fill", "#F08080").attr("rx", 10).attr("transform", "translate(30, 0)").attr("rx", 10).style("stroke", "white").style("stroke-width", 1.5);;
+    svg.append("rect").attr("x", 120).attr("y", 360).attr("height", 130).attr("width", 30)
+      .style("fill", "#AA3939").attr("rx", 10).attr("transform", "translate(60, 0)").attr("rx", 10).style("stroke", "white").style("stroke-width", 1.5);;
+
+    svg.append("rect").attr("x", 150).attr("y", 510).attr("height", 400).attr("width", 30)
+      .style("fill", "#781C1C").attr("rx", 10).attr("rx", 10).style("stroke", "white").style("stroke-width", 1.5);
+
+    svg.append("rect")
+      .attr("x", 60)
+      .attr("y", 480)
+      .attr("width", 860)
+      .attr("height", 40)
+      .attr("fill", "url(#svgGradient)").style("stroke", "white").style("stroke-width", 1.5);;
+
+
+    svg.append("rect")
+      .attr("x", 60)
+      .attr("y", 80)
+      .attr("width", 40)
+      .attr("height", 420)
+      .attr("fill", "url(#verticalGrad)").style("stroke", "white").style("stroke-width", 1.5);;
+
+    svg.append("rect")
+      .attr("x", 60)
+      .attr("y", 500)
+      .attr("width", 40)
+      .attr("height", 420)
+      .attr("fill", "url(#flippedVertical)").style("stroke", "white").style("stroke-width", 1.5);;
+
+    var triangleOne = [
+      [900, 450],
+      [970, 500],
+      [900, 550]
+    ];
+    var triangleTwo = [
+      [30, 100],
+      [80, 20],
+      [130, 100]
+    ];
+    var triangleThree = [
+      [30, 900],
+      [80, 980],
+      [130, 900]
+    ];
+    appendTriangle(triangleOne, "#b22222");
+    appendTriangle(triangleTwo, "#b22222");
+    appendTriangle(triangleThree, "#b22222");
+
+    var rawData;
+    var majorData;
+
+    function parseLine(line) {
+      return {
+        title: line["OCC_TITLE"],
+        group: line["OCC_GROUP"],
+        totalEmployment: line["TOT_EMP"]
+      };
+    }
+
+    d3.csv("2016_employment.csv", parseLine, function(error, data) {
+      rawData = data;
+
+      majorData = data.filter(function(obj) {
+        return obj.group == "major";
+      });
+
+      mortData();
+    })
+
+    /* ---Data Mgmt Pt2--- */
+    var occupations = [];
+    var rawDataMort;
+    var majorDataMort;
+
+    function mortData() {
+      majorData.forEach(function(d) {
+        occupations.push(d.title.toLowerCase());
+      });
+      occupations.push("community and social services occupations");
+
+
+      function occupationHazards(title, totalEmployment, totalFatalities, violence, transportation, combustion, falls, harmfulExposure, harmfulContact) {
+        this.title = title;
+        this.totalEmployment = totalEmployment;
+        this.totalFatalities
+        this.violence = violence;
+        this.transportation = transportation;
+        this.combustion = combustion;
+        this.falls = falls;
+        this.harmfulExposure = harmfulExposure;
+        this.harmfulContact = harmfulContact;
+      };
+
+      function parseLineMort(line) {
+        return {
+          title: line["Occupation1"],
+          totalFatalities: line["Total_Fatalities"],
+          violence: line["Violence_and_other_injuries_by_persons_or_animals"],
+          transportation: line["Transportation_incidents"],
+          combustion: line["Fires_and_explosions"],
+          falls: line["Falls_slips_trips"],
+          harmfulExposure: line["Exposure_to_harmful_substances_or_environments"],
+          harmfulContact: line["Contact_with_objects_and_equipment"]
+        };
+      };
+
+      d3.csv("2016_mortality.csv", parseLineMort, function(error, data) {
+        rawDataMort = data;
+
+        majorDataMort = data.filter(function(obj) {
+          return occupations.includes(obj.title.trim().toLowerCase());
+        });
+
+        majorDataMort.forEach(function(d) {
+          d.title = d.title.trim();
+        });
+      })
+    };
+    /* ---End Data Mgmt Pt 2--- */
+  </script>
+</body>
+
+</html>
