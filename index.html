@@ -124,21 +124,74 @@
     var rawData;
     var majorData;
 
-    function parseLine(line){
+    function parseLine(line) {
       return {
-        Title: line["OCC_TITLE"],
-        Group: line["OCC_GROUP"],
-        Total_Emp: line["TOT_EMP"]
+        title: line["OCC_TITLE"],
+        group: line["OCC_GROUP"],
+        totalEmployment: line["TOT_EMP"]
       };
     }
 
     d3.csv("2016_employment.csv", parseLine, function(error, data) {
       rawData = data;
 
-      majorData = data.filter(function (obj) {
-        return obj.Group == "major";
-      })
+      majorData = data.filter(function(obj) {
+        return obj.group == "major";
+      });
+
+      mortData();
     })
+
+    /* ---Data Mgmt Pt2--- */
+    var occupations = [];
+    var rawDataMort;
+    var majorDataMort;
+
+    function mortData() {
+      majorData.forEach(function(d) {
+        occupations.push(d.title.toLowerCase());
+      });
+      occupations.push("community and social services occupations");
+
+
+      function occupationHazards(title, totalEmployment, totalFatalities, violence, transportation, combustion, falls, harmfulExposure, harmfulContact) {
+        this.title = title;
+        this.totalEmployment = totalEmployment;
+        this.totalFatalities
+        this.violence = violence;
+        this.transportation = transportation;
+        this.combustion = combustion;
+        this.falls = falls;
+        this.harmfulExposure = harmfulExposure;
+        this.harmfulContact = harmfulContact;
+      };
+
+      function parseLineMort(line) {
+        return {
+          title: line["Occupation1"],
+          totalFatalities: line["Total_Fatalities"],
+          violence: line["Violence_and_other_injuries_by_persons_or_animals"],
+          transportation: line["Transportation_incidents"],
+          combustion: line["Fires_and_explosions"],
+          falls: line["Falls_slips_trips"],
+          harmfulExposure: line["Exposure_to_harmful_substances_or_environments"],
+          harmfulContact: line["Contact_with_objects_and_equipment"]
+        };
+      };
+
+      d3.csv("2016_mortality.csv", parseLineMort, function(error, data) {
+        rawDataMort = data;
+
+        majorDataMort = data.filter(function(obj) {
+          return occupations.includes(obj.title.trim().toLowerCase());
+        });
+
+        majorDataMort.forEach(function(d) {
+          d.title = d.title.trim();
+        });
+      })
+    };
+    /* ---End Data Mgmt Pt 2--- */
   </script>
 </body>
 
