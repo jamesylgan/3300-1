@@ -123,23 +123,38 @@
 
     var rawData;
     var majorData;
-
-    function parseLine(line) {
-      return {
-        title: line["OCC_TITLE"],
-        group: line["OCC_GROUP"],
-        totalEmployment: line["TOT_EMP"]
-      };
-    };
-
-    /* ---Data Mgmt Pt2--- */
     var occupations = [];
     var rawDataMort;
     var majorDataMort;
+    var relativeMort = [];
 
-    function mortData() {
+    function parseLine(line){
+      return {
+        Title: line["OCC_TITLE"], //the changing of Title or title is messing me up
+        Group: line["OCC_GROUP"],
+        Total_Emp: line["TOT_EMP"]
+      };
+    }
+    
+
+    d3.csv("2016_employment.csv", parseLine, function(error, data) {
+      rawData = data;
+
+      var allEmployment = data.filter(function (obj) {
+        return obj.Group == "total";
+      })
+
+      var totalEmp = allEmployment[0].Total_Emp;
+
+      majorData = data.filter(function (obj) {
+        return obj.Group == "major";
+      })
+
+      var mortalityScale = d3.scaleLinear().domain([0, 100]).range([svg.style("height")/2.0-20,20]);
+      var occupationTotalScale = d3.scaleBand().domain(majorData.map(function(d) { return d.Title; })).range([100, svg.style("width")-100]);
+
       majorData.forEach(function(d) {
-        occupations.push(d.title.toLowerCase());
+        occupations.push(d.Title.toLowerCase());
       });
       occupations.push("community and social services occupations");
 
@@ -179,42 +194,26 @@
         majorDataMort.forEach(function(d) {
           d.title = d.title.trim();
         });
+
+        //loop to calculate the percentage deaths for each occupation group [death/people * people]
+        for (i = 0; i < majorDataMort.length; i++) {
+          relativeMort.push({title: majorDataMort[i].title, rate:
+            (parseInt((majorDataMort[i].totalFatalities).replace(/[^\d\.\-]/g, "")) / parseInt((majorData[i].Total_Emp).replace(/[^\d\.\-]/g, ""))) * 100000})
+        };
+
+        svg.append("g").selectAll("rect")
+
       })
-    };
-    /* ---End Data Mgmt Pt 2--- */
+    })
+      //mortData();
+      // var q = d3.queue();
+      // q.defer(mortData);
+      // q.await((function() {
+      //   console.log("running");
+      // for (i = 0; i < majorDataMort.length; i++) {
+      //   relativeMort.push({title: majorDataMort[i].title, rate: (majorDataMort[i].totalFatalities / majorData[i].Total_Emp) * 100000})
+      // }};
 
-    d3.csv("2016_employment.csv", parseLine, function(error, data) {
-      rawData = data;
-
-      var allEmployment = data.filter(function(obj) {
-        return obj.group == "total";
-      })
-
-      var totalEmp = allEmployment[0].totalEmployment;
-
-      majorData = data.filter(function(obj) {
-        return obj.group == "major";
-      })
-
-      var mortalityScale = d3.scaleLinear().domain([0, 100]).range([svg.style("height") / 2.0 - 20, 20]);
-
-      var occupationTotalScale = d3.scaleBand().domain(majorData.map(function(d) {
-        return d.title;
-      })).range([100, svg.style("width") - 100]);
-
-      svg.append("g")
-        .selectAll("rect")
-        .data(majorData)
-        .enter().append("rect")
-        .attr("x", function(d) {
-          return x1(d.key);
-        })
-        .attr("y", function(d) {
-          return y(d.value);
-        })
-
-      mortData();
-    });
   </script>
 </body>
 
