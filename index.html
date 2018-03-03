@@ -154,6 +154,13 @@
       };
     }
 
+    //used to parse the string input from CSVs for math calculations
+    function mathParser(input) {
+      if (isNaN(parseInt(input))) {return 0;}
+      str = (input).replace(/[^\d\.\-]/g, "");
+      return parseInt(str);
+    }
+
     var svgWidth = Number(svg.style("width").substring(0, svg.style("width").length-2));
     var svgHeight = Number(svg.style("height").substring(0, svg.style("height").length-2));
 
@@ -201,6 +208,8 @@
         };
       };
 
+
+
       d3.csv("2016_mortality.csv", parseLineMort, function(error, data) {
         rawDataMort = data;
 
@@ -212,10 +221,17 @@
           d.title = d.title.trim();
         });
 
-        //loop to calculate the percentage deaths for each occupation group [death/people * people]
+        //percentage of fatalties per 100,000 workers calculator
         for (i = 0; i < majorDataMort.length; i++) {
-          relativeMort.push({title: majorDataMort[i].title, rate:
-            (parseInt((majorDataMort[i].totalFatalities).replace(/[^\d\.\-]/g, "")) / parseInt((majorData[i].Total_Emp).replace(/[^\d\.\-]/g, ""))) * 100000})
+          relativeMort.push({title: majorDataMort[i].title,
+            rate: ((mathParser(majorDataMort[i].totalFatalities)) / mathParser(majorData[i].Total_Emp)) * 100000,
+            violence: mathParser(majorDataMort[i].violence) / mathParser(majorDataMort[i].totalFatalities),
+            transportation: mathParser(majorDataMort[i].transportation) / mathParser(majorDataMort[i].totalFatalities),
+            combustion: mathParser(majorDataMort[i].combustion) / mathParser(majorDataMort[i].totalFatalities),
+            falls: mathParser(majorDataMort[i].falls) / mathParser(majorDataMort[i].totalFatalities),
+            harmfulExposure: mathParser(majorDataMort[i].harmfulExposure) / mathParser(majorDataMort[i].totalFatalities),
+            harmfulContact: mathParser(majorDataMort[i].harmfulContact) / mathParser(majorDataMort[i].totalFatalities)
+            })
         };
 
         var mortExtent = d3.extent(relativeMort, function (d) { return d.rate; });
