@@ -249,83 +249,77 @@
 
         var mortExtent = d3.extent(relativeMort, function (d) { return d.rate; });
 
-        mortalityScale = d3.scaleLinear().domain([0, 70]).range([0, svgHeight/2.0-90]);
+        mortalityScale = d3.scaleLinear().domain([0, mortExtent[1]]).range([0, svgHeight/2.0-90]);
         occupationTotalScale = d3.scaleLinear().domain([0, 21]).range([130, svgWidth-120]);
 
-        var mortalityAxis = d3.axisLeft(mortalityScale).tickSize(-(svgWidth-100)).ticks(5);
+        var mortalityAxis = d3.axisLeft(mortalityScale).tickSize(-(svgWidth-100)).ticks(6);
 
         svg.append("g")
           .style("font", "20px sans serif")
-          .attr("transform", "translate(80, " + (svgHeight/2.0 + 20) + ")")
+          .attr("transform", "translate(90, " + (svgHeight/2.0 + 20) + ")")
           .call(mortalityAxis);
 
-          var triangleOne = [
-            [svgWidth-80, 450],
-            [svgWidth, 500],
-            [svgWidth-80, 550]
-          ];
-          var triangleTwo = [
-            [60, 100],
-            [110, 20],
-            [160, 100]
-          ];
-          var triangleThree = [
-            [60, svgHeight-80],
-            [110, svgHeight],
-            [160, svgHeight-80]
-          ];
+            var bars = svg.selectAll("#bars").data(relativeMort);
 
-          svg.append("rect")
-            .attr("x", 90)
-            .attr("y", svgHeight/2.0-20)
-            .attr("width", svgWidth - 150)
-            .attr("height", 40)
-            .attr("fill", "url(#svgGradient)");
+          bars.enter().append("rect")
+            .attr('x', function(d, i){
+              return occupationTotalScale(i);
+            })
+            .attr('y', svgHeight/2.0+15)
+            .attr("width", 35)
+            .attr("height", function(d){
+              return (mortalityScale(d.rate)+5);
+            })
+            .style("fill", "#8b4513")
+            .attr("rx", 8);
+
+            var triangleOne = [
+              [svgWidth-80, 450],
+              [svgWidth, 500],
+              [svgWidth-80, 550]
+            ];
+            var triangleTwo = [
+              [60, 100],
+              [110, 20],
+              [160, 100]
+            ];
+            var triangleThree = [
+              [60, svgHeight-80],
+              [110, svgHeight],
+              [160, svgHeight-80]
+            ];
+
+            appendTriangle(triangleOne, "#b22222");
+            appendTriangle(triangleTwo, "#b22222");
+            appendTriangle(triangleThree, "#b22222");
 
 
-          svg.append("rect")
-            .attr("x", 90)
-            .attr("y", 90)
-            .attr("width", 40)
-            .attr("height", svgHeight/2.0-80)
-            .attr("fill", "url(#verticalGrad)");
+            svg.append("rect")
+              .attr("x", 90)
+              .attr("y", svgHeight/2.0-20)
+              .attr("width", svgWidth - 150)
+              .attr("height", 40)
+              .attr("fill", "url(#svgGradient)")
+              .attr("z", -1);
 
-          svg.append("rect")
-            .attr("x", 80)
-            .attr("y", svgHeight/2.0)
-            .attr("width", 40)
-            .attr("height", svgHeight/2.0-80)
-            .attr("fill", "url(#flippedVertical)");
 
-        var bars = svg.selectAll("#bars").data(relativeMort);
+            svg.append("rect")
+              .attr("x", 90)
+              .attr("y", 90)
+              .attr("width", 40)
+              .attr("height", svgHeight/2.0-80)
+              .attr("fill", "url(#verticalGrad)");
 
-        bars.enter().append("rect")
-          .attr('x', function(d, i){
-            return occupationTotalScale(i);
-          })
-          .attr('y', svgHeight/2.0+20)
-          .attr("width", 35)
-          .attr("height", function(d){
-            return mortalityScale(d.rate);
-          })
-          .style("fill", "#8b4513")
+            svg.append("rect")
+              .attr("x", 90)
+              .attr("y", svgHeight/2.0)
+              .attr("width", 40)
+              .attr("height", svgHeight/2.0-80)
+              .attr("fill", "url(#flippedVertical)");
 
-          appendTriangle(triangleOne, "#b22222");
-          appendTriangle(triangleTwo, "#b22222");
-          appendTriangle(triangleThree, "#b22222");
+        })
 
-          // var occScale = d3.scaleBand()
-          //   .rangeRound([0, svgWidth-100])
-          //   .paddingInner(0.1)
-          //   .domain([0, 1, 2, 3, 4]);
-          //
-          // var causeScale = d3.scaleBand()
-          //   .padding(0.05);
-          //   .domain([2,4,6,8]).rangeRound([0, occScale.bandwidth()]);
-          //
-          // var causeMortalityScale = d3.scaleLinear().domain([0, 100]).range([20, svgHeight/2.0-20]);
 
-      })
     })
 
 
