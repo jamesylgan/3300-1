@@ -129,7 +129,8 @@
       return {
         Title: line["OCC_TITLE"], //the changing of Title or title is messing me up
         Group: line["OCC_GROUP"],
-        Total_Emp: line["TOT_EMP"]
+        Total_Emp: line["TOT_EMP"],
+        meanSalary: line["A_MEAN"]
       };
     }
 
@@ -193,6 +194,10 @@
       majorData.forEach(function(d) {
         occupations.push(d.Title.toLowerCase());
       });
+
+      majorData.forEach(function(d) {
+        occupations.push(d.meanSalary);
+      });
       occupations.push("community and social services occupations");
 
 
@@ -243,7 +248,8 @@
             combustion: mathParser(majorDataMort[i].combustion) / mathParser(majorDataMort[i].totalFatalities),
             falls: mathParser(majorDataMort[i].falls) / mathParser(majorDataMort[i].totalFatalities),
             harmfulExposure: mathParser(majorDataMort[i].harmfulExposure) / mathParser(majorDataMort[i].totalFatalities),
-            harmfulContact: mathParser(majorDataMort[i].harmfulContact) / mathParser(majorDataMort[i].totalFatalities)
+            harmfulContact: mathParser(majorDataMort[i].harmfulContact) / mathParser(majorDataMort[i].totalFatalities),
+            meanSalary: mathParser(majorData[i].meanSalary)
             })
         };
 
