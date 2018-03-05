@@ -5,6 +5,7 @@
   <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/styles/default.min.css">
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="https://d3js.org/topojson.v2.min.js"></script>
+  <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
 </head>
 <style>
@@ -179,12 +180,11 @@
       majorData.forEach(function(d) {
         occupations.push(d.Title.toLowerCase());
       });
+      occupations.push("community and social services occupations");
 
       majorData.forEach(function(d) {
         occupations.push(d.meanSalary);
       });
-      occupations.push("community and social services occupations");
-
 
       function occupationHazards(title, totalEmployment, totalFatalities, violence, transportation, combustion, falls, harmfulExposure, harmfulContact) {
         this.title = title;
@@ -318,7 +318,9 @@
           .attr("height", function(d) {
             return (svgHeight - 45 - (mortalityScale(d.rate)));
           })
-          .style("fill", "#8b4513")
+          .style("fill", function(d) {
+            return d3.interpolateGreens(d.meanSalary / 48900);
+          })
           .attr("rx", 8);
 
         //Triangles representing arrows for end of axis
