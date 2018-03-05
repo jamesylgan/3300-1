@@ -24,8 +24,10 @@
 
 <body>
   <svg id="title" width=1200 height=120></svg>
-  <svg id="bar_graph" width=1200 height=500>
-  </svg>
+  <svg id="bar_graph" width=1200 height=500></svg>
+
+
+
   <script>
     var svg = d3.select("#bar_graph");
     var textSvg = d3.select("#title");
@@ -107,6 +109,7 @@
     var causeScale;
     var mortList;
     var pies;
+    var meanSalaryScale;
 
     var causes = ["Harmful Contact", "Combustion", "Violence", "Harmful Exposure", "Transportation", "Falls"];
     //Maps each cause of death to a color
@@ -258,6 +261,12 @@
 
         //Creates horizontal grid lines
         var mortalityAxis = d3.axisLeft(mortalityScale).tickSize(-(svgWidth-150)).ticks(5);
+
+        //Salary X-axis scale
+        meanSalaryScale = d3.scaleLinear().domain([0, 60000]).range([10, 1170]);
+
+        //Creates salary axis and vertical tick marks
+        var salaryAxis = d3.axisBottom(meanSalaryScale).tickSize(-(svgWidth-100)).ticks(6);
 
         //Appends grid lines
         svg.append("g")
@@ -440,10 +449,51 @@
           .attr("font-family", "Pedra")
           .text("DEATH BY CAUSE")
           .attr("transform", "rotate(270, 40, +"+(svg.attr("height")-90)+")");
+
+          //creates SVG for annual bar graph
+          d3.select("body").append("svg")
+            .attr("width", 1200)
+            .attr("height", 1000)
+            .attr("id", "salary_graph")
+            .attr("transform", "translate(0, 100)");
+          //selects svg for salary graph
+          var salSvg = d3.select("#salary_graph")
+
+          //adds caption for graph (needs to be adjusted a bit)
+          d3.select("body").append("text")
+          .attr("y", 0)
+          .attr("x", 0)
+          .attr("font-size", 60)
+          .attr("fill", "green")
+          .attr("font-family", "sans-serif")
+          .text("ANNUAL SALARY (USD)")
+          .attr("transform", "translate(0, 0)");
+
+          //creates salary axis
+          salSvg.append("g")
+            .style("font", "18px sans serif")
+            .attr("transform", "translate(80,980)")
+            .call(salaryAxis);
+
+            //creates mean salary bars based on data
+            var salBars = salSvg.selectAll("#bars").data(relativeMort);
+            salSvg.append("rect")
+
+            salBars.enter().append("rect")
+              .attr('y', function(d, i){
+                return occupationTotalScale(i);
+              })
+              .attr('x', 90)
+              .attr("height", 60)
+              .attr("width", function(d){
+                return (meanSalaryScale(d.meanSalary));
+              })
+              .style("fill", "green")
+              .attr("rx", 8)
+              .attr("transform", "translate(0,0)");
+
       })
     })
-
-
 
 
   </script>
