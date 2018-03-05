@@ -6,6 +6,7 @@
   <script src="https://d3js.org/d3.v4.min.js"></script>
   <script src="https://d3js.org/topojson.v2.min.js"></script>
   <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3-annotation/2.1.0/d3-annotation.js"></script>
   <script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.9.0/highlight.min.js"></script>
 </head>
 <style>
@@ -322,6 +323,51 @@
             return d3.interpolateGreens(d.meanSalary / 48900);
           })
           .attr("rx", 8);
+
+        // d3.annotation annotating the bars
+        // Edited usage example from http://d3-annotation.susielu.com
+        const type = d3.annotationCallout
+
+        const annotations = [];
+
+        relativeMort.forEach(function(d, i) {
+          if (i < 5) {
+            annotations.push({
+              note: {
+                label: "$" + d.meanSalary,
+                title: "Average Salary"
+              },
+              //can use x, y directly instead of data
+              y: mortalityScale(d.rate) + 40,
+              x: occupationTotalScale(i) + 40,
+              dy: -50 + (i * -30),
+              dx: 25
+            });
+          } else {
+            annotations.push({
+              note: {
+                label: "$" + d.meanSalary,
+                title: "Average Salary"
+              },
+              //can use x, y directly instead of data
+              y: mortalityScale(d.rate) + 40,
+              x: occupationTotalScale(i) + 40,
+              dy: -50,
+              dx: -50
+            });
+          }
+        });
+
+        const makeAnnotations = d3.annotation()
+          .editMode(true)
+          .type(type)
+          .annotations(annotations)
+
+        d3.select("#bar_graph")
+          .append("g")
+          .attr("class", "annotation-group")
+          .call(makeAnnotations)
+
 
         //Triangles representing arrows for end of axis
         var triangleOne = [
