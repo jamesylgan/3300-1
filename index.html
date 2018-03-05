@@ -61,7 +61,7 @@
     function appendTriangle(points, color, id) {
       var generator = d3.line();
       var pathEl = generator(points);
-      d3.select("#"+id).append("path").attr("d", pathEl).attr("fill", color);
+      d3.select("#" + id).append("path").attr("d", pathEl).attr("fill", color);
     }
 
     //function for creating gradients with startColor and endColor
@@ -554,7 +554,7 @@
             .attr("fill", "#670606")
             .attr("font-family", "Impact")
             .attr("font-size", 14)
-            .text(d[6].value.substr(lineBreak + 1, d[6].value.length - lineBreak - 13));
+            .text(d[6].value.substr(lineBreak + 1, d[6].value.length - lineBreak - 13).toUpperCase());
           });
 
           // d3.annotation annotating the circle
