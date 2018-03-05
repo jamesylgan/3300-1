@@ -15,11 +15,16 @@
 
   @font-face { font-family: Pedra; src: url('vtks-report-error/VTKS REPORT ERROR.ttf'); }
 
+  #legend {
+    border: solid #ccc 1px;
+    background-color: rgb(230, 230, 230);
+  }
+
 </style>
 
 <body>
   <svg id="title" width=1200 height=120></svg>
-  <svg id="bar_graph" width=1200 height=800>
+  <svg id="bar_graph" width=1200 height=500>
   </svg>
   <script>
     var svg = d3.select("#bar_graph");
@@ -103,6 +108,12 @@
     var mortList;
     var pies;
 
+    var causes = ["Harmful Contact", "Combustion", "Violence", "Harmful Exposure", "Transportation", "Falls"];
+    //Maps each cause of death to a color
+    var color = d3.scaleOrdinal()
+            .domain(causes)
+            .range(["#daa520", "#f0714d", "#d63c4a", "#90007d", "#d73b65", "#8b0000"]);
+
     //Changes key names when parsing csv into objects
     function parseLine(line){
       return {
@@ -133,16 +144,6 @@
     .attr("font-family", "Pedra")
     .text("TOTAL MORTALITY")
     .attr("transform", "rotate(270, 40, +"+(svg.attr("height")/4 + 20)+")");
-
-    //"Death by Cause" title for circle graphs
-    svg.append("text").attr("text-anchor", "middle")
-    .attr("y", (svg.attr("height")-90))
-    .attr("x", 40)
-    .attr("font-size", 30)
-    .attr("fill", "#670606")
-    .attr("font-family", "Pedra")
-    .text("DEATH BY CAUSE")
-    .attr("transform", "rotate(270, 40, +"+(svg.attr("height")-90)+")");
 
     //Label for bar-graph y-axis
     svg.append("text")
@@ -240,15 +241,17 @@
 
         //Creates list of key and values for each pie chart
         mortList = relativeMort.map(function(d){
-          return [{key: "Violence", value: d.violence}, {key: "Transportation", value:d.transportation},
-            {key: "Combustion", value: d.combustion}, {key: "Falls", value: d.falls},
+          return [{key: "Harmful Contact", value: d.harmfulContact}, {key: "Combustion", value: d.combustion},
+          {key: "Violence", value: d.violence},
             {key: "Harmful Exposure", value: d.harmfulExposure},
-            {key: "Harmful Contact", value: d.harmfulContact}];
+            {key: "Transportation", value:d.transportation},
+             {key: "Falls", value: d.falls}
+            ];
         });
         var mortExtent = d3.extent(relativeMort, function (d) { return d.rate; });
 
         //Y-axis scale
-        mortalityScale = d3.scaleLinear().domain([0, 60]).range([svgHeight-270, 90]);
+        mortalityScale = d3.scaleLinear().domain([0, 60]).range([svgHeight-70, 90]);
 
         //X-axis scale
         occupationTotalScale = d3.scaleLinear().domain([0, relativeMort.length-1]).range([130, svgWidth-120]);
@@ -274,16 +277,16 @@
             })
             .attr("width", 70)
             .attr("height", function(d){
-              return (svgHeight-245-(mortalityScale(d.rate)));
+              return (svgHeight-45-(mortalityScale(d.rate)));
             })
             .style("fill", "#8b4513")
             .attr("rx", 8);
 
         //Triangles representing arrows for end of axis
         var triangleOne = [
-              [svgWidth-80, svgHeight-200],
-              [svgWidth, svgHeight-250],
-              [svgWidth-80, svgHeight-300]
+              [svgWidth-80, svgHeight],
+              [svgWidth, svgHeight-50],
+              [svgWidth-80, svgHeight-100]
             ];
         var triangleTwo = [
               [60, 100],
@@ -298,7 +301,7 @@
         //X-axis bar
         svg.append("rect")
               .attr("x", 90)
-              .attr("y", svgHeight-270)
+              .attr("y", svgHeight-70)
               .attr("width", svgWidth - 150)
               .attr("height", 40)
               .attr("fill", "url(#svgGradient)");
@@ -308,54 +311,140 @@
               .attr("x", 90)
               .attr("y", 90)
               .attr("width", 40)
-              .attr("height", svgHeight-330)
+              .attr("height", svgHeight-130)
               .attr("fill", "url(#verticalGrad)");
 
         //Beginning of code for donut graphs
+        // d3.select("body").append("svg")
+        //   .attr("height", 400)
+        //   .attr("width", 50);
 
-        //Maps each cause of death to a color
-        var color = d3.scaleOrdinal()
-                .domain(["Violence", "Transportation", "Combustion", "Harmful Exposure", "Harmful Contact"])
-                .range(["#daa520", "#f0714d", "#d63c4a", "#90007d", "#d73b65", "#8b0000"]);
+        d3.select("body").append("svg")
+          .attr("width", 1150)
+          .attr("height", 400)
+          .attr("id", "legend")
+          .attr("transform", "translate(70, 0)");
+
+        var legend = d3.select("#legend");
 
         //Creates a function that creates a pie chart using values of a list
-        var pie = d3.pie()
-                .sort(null).value(function(d) { return d.value; });
+        var pie = d3.pie().sort(null).value(function(d) { return d.value; });
 
         //For each occupation in mortList
         mortList.forEach(function(d, i){
           //Function that creates an arc with outerRadius of 75 and innerRadius of 40 for the donut
           var arc = d3.arc()
-                    .outerRadius(75)
-                    .innerRadius(40);
+            .outerRadius(75)
+            .innerRadius(40);
 
-          //Appends and svg to #bar_graph for each donut graph
-          var box = d3.select("#bar_graph").append("svg")
-                  .attr("width", 150)
-                  .attr("height", 150)
-                  .attr("x", occupationTotalScale(i)-40)
-                  .attr("y", svgHeight-180);
+            //Appends and svg to #bar_graph for each donut graph
+          var box = d3.select("#legend").append("svg")
+            .attr("width", 150)
+            .attr("height", 150)
+            .attr("x", occupationTotalScale(i)-100)
+            .attr("y", 50);
 
-          //Creates a arc for each cause of death used in pie
+            //Creates a arc for each cause of death used in pie
           var g = box.selectAll(".arc")
-                    .data(pie(d))
-                    .enter().append("g")
-                    .attr("class", "arc");
+            .data(pie(d))
+            .enter().append("g")
+            .attr("class", "arc");
 
-          //Displays path that forms the arcs for the donut graphs
+            //Displays path that forms the arcs for the donut graphs
           g.append("path")
-              .attr("d", arc)
-              .style("fill", function(d) {return color(d.data.key); })
-              .attr("transform", "translate(75, 75)");
+            .attr("d", arc)
+            .style("fill", function(d) {return color(d.data.key); })
+            .attr("transform", "translate(75, 75)");
         })
+        var causesHalf1 = causes.filter(function(d,i){return i < 3;});
+        var causesHalf2 = causes.filter(function(d,i){return i >= 3;});
+
+        var legendHalf1 = legend.selectAll('.legendHalf1')
+          .data(causesHalf1)
+          .enter().append('g')
+          .attr("class", "legendHalf1")
+          .attr("transform", function (d, i) {
+            return "translate("+(200 + (i * 320)) + ",240)"
+          });
+
+        var keys = legendHalf1.append('rect')
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", 50)
+          .attr("height", 50)
+          .style("fill", function (d) {
+            return color(d)
+          })
+
+        var refs1 = ["blade.png", "fire.png", "fist.png"];
+
+        var refs2 = ["chemical.png", "cars.png", "falling.png"];
+
+        legendHalf1.append("image")
+        .attr("href", function (d, i) {
+          return refs1[i];
+        })
+        .attr("width", 40)
+        .attr("transform", "translate(5,5)");
+
+        legendHalf1.append('text')
+          .attr("x", 60)
+          .attr("y", 40)
+          .text(function (d, i) {
+            return d
+          })
+          .attr("class", "textselected")
+          .style("text-anchor", "start")
+          .style("font-size", 40);
+
+        var legendHalf2 = legend.selectAll('.legendHalf2')
+          .data(causesHalf2)
+          .enter().append('g')
+          .attr("class", "legendHalf2")
+          .attr("transform", function (d, i) {
+              return "translate("+(200 + (i * 320)) + ",305)"
+            });
+
+        legendHalf2.append('rect')
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", 50)
+          .attr("height", 50)
+          .style("fill", function (d) {
+            return color(d)
+          });
+
+        legendHalf2.append("image")
+          .attr("href", function (d, i) {
+            return refs2[i];
+          })
+          .attr("width", 40)
+          .attr("transform", "translate(5,5)");
+
+        legendHalf2.append('text')
+          .attr("x", 60)
+          .attr("y", 40)
+          .text(function (d, i) {
+            return d
+          })
+          .attr("class", "textselected")
+          .style("text-anchor", "start")
+          .style("font-size", 40);
+
+          //"Death by Cause" title for circle graphs
+        svg.append("text").attr("text-anchor", "middle")
+          .attr("y", (svg.attr("height")-90))
+          .attr("x", 40)
+          .attr("font-size", 30)
+          .attr("fill", "#670606")
+          .attr("font-family", "Pedra")
+          .text("DEATH BY CAUSE")
+          .attr("transform", "rotate(270, 40, +"+(svg.attr("height")-90)+")");
       })
     })
 
-    var legend = d3.select("body").append("svg")
-      .attr("width", 1200)
-      .attr("height", 300);
 
-    // legend.append("svg").attr("x", 400).attr("width", 400).attr("height", 200);
+
 
   </script>
 </body>
