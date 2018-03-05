@@ -19,7 +19,7 @@
     src: url('vtks-report-error/VTKS REPORT ERROR.ttf');
   }
 
-  #legend {
+  #legend, #legend2 {
     border: solid #ccc 1px;
     background-color: rgb(230, 230, 230);
   }
@@ -27,7 +27,7 @@
 
 <body>
   <svg id="title" width=1200 height=120></svg>
-  <svg id="bar_graph" width=1200 height=500>
+  <svg id="bar_graph" width=1200 height=500 overflow="visible">
     </svg>
   <svg id="labels" width=1200 height=50>
   </svg>
@@ -57,10 +57,10 @@
     var defs = svg.append("defs");
 
     //Function for appending triangles using paths
-    function appendTriangle(points, color) {
+    function appendTriangle(points, color, id) {
       var generator = d3.line();
       var pathEl = generator(points);
-      svg.append("path").attr("d", pathEl).attr("fill", color);
+      d3.select("#"+id).append("path").attr("d", pathEl).attr("fill", color);
     }
 
     //function for creating gradients with startColor and endColor
@@ -119,7 +119,7 @@
     //Maps each cause of death to a color
     var color = d3.scaleOrdinal()
       .domain(causes)
-      .range(["#daa520", "#f0714d", "#d63c4a", "#90007d", "#d73b65", "#8b0000"]);
+      .range(["#daa520", "#f0714d", "rgb(200,0,0)", "#90007d", "#d73b65", "#8b0000"]);
 
     //Changes key names when parsing csv into objects
     function parseLine(line) {
@@ -146,13 +146,13 @@
 
     //"Total Mortality" title for y-axis
     svg.append("text").attr("text-anchor", "middle")
-      .attr("y", svg.attr("height") / 4 + 20)
+      .attr("y", svg.attr("height") / 2)
       .attr("x", 40)
       .attr("font-size", 30)
       .attr("fill", "#670606")
       .attr("font-family", "Pedra")
       .text("TOTAL MORTALITY")
-      .attr("transform", "rotate(270, 40, +" + (svg.attr("height") / 4 + 20) + ")");
+      .attr("transform", "rotate(270, 40, +" + (svg.attr("height") / 2) + ")");
 
     //Label for bar-graph y-axis
     svg.append("text")
@@ -242,14 +242,15 @@
         //Sorts mortality from least to greatest
         relativeMort = relativeMort.sort(function(x, y) {
             return x.rate - y.rate;
-          })
-          //Retrieves only top 6 occupations with greatest mortalities
-          .filter(function(d, i) {
-            return i >= (relativeMort.length - 6);
           });
 
+          //Retrieves only top 6 occupations with greatest mortalities
+        var highest = relativeMort.filter(function(d, i) {
+            return i >= (relativeMort.length - 6);
+        });
+
         //Creates list of key and values for each pie chart
-        mortList = relativeMort.map(function(d) {
+        mortList = highest.map(function(d) {
           return [{
               key: "Harmful Contact",
               value: d.harmfulContact
@@ -279,7 +280,9 @@
             }
           ];
         });
-        var mortExtent = d3.extent(relativeMort, function(d) {
+
+
+        var mortExtent = d3.extent(highest, function(d) {
           return d.rate;
         });
 
@@ -287,7 +290,7 @@
         mortalityScale = d3.scaleLinear().domain([0, 60]).range([svgHeight - 70, 90]);
 
         //X-axis scale
-        occupationTotalScale = d3.scaleLinear().domain([0, relativeMort.length - 1]).range([130, svgWidth - 120]);
+        occupationTotalScale = d3.scaleLinear().domain([0, highest.length - 1]).range([130, svgWidth - 120]);
 
         //Creates horizontal grid lines
         var mortalityAxis = d3.axisLeft(mortalityScale).tickSize(-(svgWidth - 150)).ticks(5);
@@ -304,7 +307,7 @@
           .attr("transform", "translate(90,0)")
           .call(mortalityAxis);
 
-        var bars = svg.selectAll("#bars").data(relativeMort);
+        var bars = svg.selectAll("#bars").data(highest);
 
         //Creates bars representing deaths per 100,000 people for total mortality per occupation
         bars.enter().append("rect")
@@ -335,8 +338,8 @@
           [160, 100]
         ];
 
-        appendTriangle(triangleOne, "#b22222");
-        appendTriangle(triangleTwo, "#b22222");
+        appendTriangle(triangleOne, "#b22222", "bar_graph");
+        appendTriangle(triangleTwo, "#b22222", "bar_graph");
 
 
         //X-axis bar
@@ -356,17 +359,24 @@
           .attr("fill", "url(#verticalGrad)");
 
         //Beginning of code for donut graphs
-        // d3.select("body").append("svg")
-        //   .attr("height", 400)
-        //   .attr("width", 50);
 
         d3.select("body").append("svg")
-          .attr("width", 1150)
+          .attr("width", 1210)
           .attr("height", 400)
           .attr("id", "legend")
-          .attr("transform", "translate(70, 0)");
+          .attr("transform", "translate(10, 0)");
 
         var legend = d3.select("#legend");
+
+        //"Death by Cause" title for circle graphs
+        legend.append("text").attr("text-anchor", "middle")
+          .attr("y", (legend.attr("height")/2))
+          .attr("x", 40)
+          .attr("font-size", 30)
+          .attr("fill", "#670606")
+          .attr("font-family", "Pedra")
+          .text("DEATH BY CAUSE")
+          .attr("transform", "rotate(270, 40, +" + (legend.attr("height")/2) + ")");
 
         //Creates a function that creates a pie chart using values of a list
         var pie = d3.pie().sort(null).value(function(d) {
@@ -384,8 +394,8 @@
           var box = d3.select("#legend").append("svg")
             .attr("width", 150)
             .attr("height", 150)
-            .attr("x", occupationTotalScale(i) - 100)
-            .attr("y", 50);
+            .attr("x", occupationTotalScale(i)-40)
+            .attr("y", 30);
 
           //Creates a arc for each cause of death used in pie
           var g = box.selectAll(".arc")
@@ -411,14 +421,20 @@
           //Prints the first line of the occupation title
           labelSvg.append("text")
             .attr("y", 12)
-            .attr("x", 100 + (195 * i))
-            .text(d[6].value.substr(0, lineBreak));
+            .attr("x", 125 + (185 * i))
+            .text(d[6].value.substr(0, lineBreak).toUpperCase())
+            .attr("fill", "#670606")
+            .attr("font-family", "Impact")
+              .attr("font-size", 14);
 
           //Prints the second line of the occupation title
           labelSvg.append("text")
-            .attr("y", 24)
-            .attr("x", 100 + (195 * i))
-            .text(d[6].value.substr(lineBreak + 1, d[6].value.length - lineBreak - 13));
+            .attr("y", 26)
+            .attr("x", 125 + (185 * i))
+            .text(d[6].value.substr(lineBreak + 1, d[6].value.length - lineBreak - 13).toUpperCase())
+            .attr("fill", "#670606")
+            .attr("font-family", "Impact")
+              .attr("font-size", 14);
         })
         var causesHalf1 = causes.filter(function(d, i) {
           return i < 3;
@@ -499,57 +515,305 @@
           .style("text-anchor", "start")
           .style("font-size", 40);
 
+        d3.select("body").append("svg")
+          .attr("width", 1200)
+          .attr("height", 160)
+          .attr("id", "safeTitle");
+
+       d3.select("body").append("svg")
+            .attr("width", 1200)
+            .attr("height", 500)
+            .attr("id", "safeBars");
+
+        d3.select("body").append("svg")
+              .attr("width", 1200)
+              .attr("height", 50)
+              .attr("id", "safeLabels");
+
+        var safeTitle = d3.select("#safeTitle");
+        var safeBars = d3.select("#safeBars");
+        var safeLabels = d3.select("#safeLabels");
+
+        safeBars.append("text").attr("text-anchor", "middle")
+          .attr("y", svg.attr("height")/2)
+          .attr("x", 40)
+          .attr("font-size", 30)
+          .attr("fill", "#670606")
+          .attr("font-family", "Pedra")
+          .text("TOTAL MORTALITY")
+          .attr("transform", "rotate(270, 40, +" + (svg.attr("height")/2) + ")")
+
+        var text = safeTitle.append("text")
+          .attr("x", svg.attr("width") / 2 - 40)
+          .attr("y", 120)
+          .attr("text-anchor", "middle")
+          .attr("font-size", 70)
+          .attr("font-weight", "bold")
+          .attr("fill", "#670606")
+          .attr("font-family", "Pedra")
+          .text("SAFEST JOBS IN AMERICA");
+
+
+        //skull image next to title
+        safeTitle.append("image")
+          .attr("href", "safe.png")
+          .attr("width", 70)
+          .attr("x", safeTitle.attr("width") / 2 + 300)
+          .attr("y", 60);
+
+        //Retrieves only top 6 occupations with greatest mortalities
+        var lowest = relativeMort.filter(function(d, i) {
+          return (i < 6);
+        });
+
+        mortExtent = d3.extent(lowest, function(d) {
+          return d.rate;
+        });
+
+        //Y-axis scale
+        mortalityScale = d3.scaleLinear().domain([0, 4]).range([svgHeight - 70, 90]);
+
+        //X-axis scale
+        occupationTotalScale = d3.scaleLinear().domain([0, lowest.length - 1]).range([130, svgWidth - 120]);
+
+        //Creates horizontal grid lines
+        mortalityAxis = d3.axisLeft(mortalityScale).tickSize(-(svgWidth - 150)).ticks(5);
+
+        //Salary X-axis scale
+        meanSalaryScale = d3.scaleLinear().domain([0, 60000]).range([10, 1170]);
+
+        //Creates salary axis and vertical tick marks
+        salaryAxis = d3.axisBottom(meanSalaryScale).tickSize(-(svgWidth - 100)).ticks(6);
+
+        //Appends grid lines
+        safeBars.append("g")
+          .style("font", "20px sans serif")
+          .attr("transform", "translate(90,0)")
+          .call(mortalityAxis);
+
+        bars = safeBars.selectAll("#safeRect").data(lowest);
+
+        //Creates bars representing deaths per 100,000 people for total mortality per occupation
+        bars.enter().append("rect")
+          .attr('x', function(d, i) {
+            return occupationTotalScale(i);
+          })
+          .attr('y', function(d) {
+            return (mortalityScale(d.rate));
+          })
+          .attr("width", 70)
+          .attr("height", function(d) {
+            return (svgHeight - 45 - (mortalityScale(d.rate)));
+          })
+          .style("fill", function(d) {
+            return d3.interpolateGreens(d.meanSalary / 48900);
+          })
+          .attr("rx", 8);
+
+
+        appendTriangle(triangleOne, "#b22222", "safeBars");
+        appendTriangle(triangleTwo, "#b22222", "safeBars");
+
+
+        //X-axis bar
+        safeBars.append("rect")
+          .attr("x", 90)
+          .attr("y", svgHeight - 70)
+          .attr("width", svgWidth - 150)
+          .attr("height", 40)
+          .attr("fill", "url(#svgGradient)");
+
+        //Y-axis bar
+        safeBars.append("rect")
+          .attr("x", 90)
+          .attr("y", 90)
+          .attr("width", 40)
+          .attr("height", svgHeight - 130)
+          .attr("fill", "url(#verticalGrad)");
+
+        //Beginning of code for donut graphs
+
+        mortListLow = lowest.map(function(d) {
+          return [{
+              key: "Harmful Contact",
+              value: d.harmfulContact
+            }, {
+              key: "Combustion",
+              value: d.combustion
+            },
+            {
+              key: "Violence",
+              value: d.violence
+            },
+            {
+              key: "Harmful Exposure",
+              value: d.harmfulExposure
+            },
+            {
+              key: "Transportation",
+              value: d.transportation
+            },
+            {
+              key: "Falls",
+              value: d.falls
+            },
+            {
+              key: "title",
+              value: d.title
+            }
+          ];
+        });
+
+        d3.select("body").append("svg")
+          .attr("width", 1210)
+          .attr("height", 400)
+          .attr("id", "legend2")
+          .attr("transform", "translate(10, 0)");
+
+        var legend2 = d3.select("#legend2");
+
         //"Death by Cause" title for circle graphs
-        svg.append("text").attr("text-anchor", "middle")
-          .attr("y", (svg.attr("height") - 90))
+        legend2.append("text").attr("text-anchor", "middle")
+          .attr("y", (legend2.attr("height")/2))
           .attr("x", 40)
           .attr("font-size", 30)
           .attr("fill", "#670606")
           .attr("font-family", "Pedra")
           .text("DEATH BY CAUSE")
-          .attr("transform", "rotate(270, 40, +" + (svg.attr("height") - 90) + ")");
+          .attr("transform", "rotate(270, 40, +" + (legend2.attr("height")/2) + ")");
 
-        //creates SVG for annual bar graph
-        d3.select("body").append("svg")
-          .attr("width", 1200)
-          .attr("height", 1000)
-          .attr("id", "salary_graph")
-          .attr("transform", "translate(0, 100)");
-        //selects svg for salary graph
-        var salSvg = d3.select("#salary_graph")
+        //Creates a function that creates a pie chart using values of a list
+        var pie = d3.pie().sort(null).value(function(d) {
+          return d.value;
+        });
 
-        //adds caption for graph (needs to be adjusted a bit)
-        d3.select("body").append("text")
-          .attr("y", 0)
+        //For each occupation in mortList
+        mortListLow.forEach(function(d, i) {
+          //Function that creates an arc with outerRadius of 75 and innerRadius of 40 for the donut
+          var arc = d3.arc()
+            .outerRadius(75)
+            .innerRadius(40);
+
+          //Appends and svg to #bar_graph for each donut graph
+          var box = d3.select("#legend2").append("svg")
+            .attr("width", 150)
+            .attr("height", 150)
+            .attr("x", occupationTotalScale(i)-40)
+            .attr("y", 30);
+
+          //Creates a arc for each cause of death used in pie
+          var g = box.selectAll(".arc")
+            .data(pie(d))
+            .enter().append("g")
+            .attr("class", "arc");
+
+          //Displays path that forms the arcs for the donut graphs
+          g.append("path")
+            .attr("d", arc)
+            .style("fill", function(d) {
+              return color(d.data.key);
+            })
+            .attr("transform", "translate(75, 75)");
+
+
+          //Determines where to start a new line
+          var lineBreak = d[6].value.indexOf(" ", 20);
+          if (lineBreak == -1) {
+            lineBreak = d[6].value.length - 11;
+          };
+
+          //Prints the first line of the occupation title
+          safeLabels.append("text")
+            .attr("y", 12)
+            .attr("x", 125 + (185 * i))
+            .text(d[6].value.substr(0, lineBreak).toUpperCase())
+            .attr("fill", "#670606")
+            .attr("font-family", "Impact")
+              .attr("font-size", 14);
+
+          //Prints the second line of the occupation title
+          safeLabels.append("text")
+            .attr("y", 26)
+            .attr("x", 125 + (185 * i))
+            .text(d[6].value.substr(lineBreak + 1, d[6].value.length - lineBreak - 13).toUpperCase())
+            .attr("fill", "#670606")
+            .attr("font-family", "Impact")
+              .attr("font-size", 14);
+        })
+
+        var legendHalf1 = legend2.selectAll('.legendHalf1')
+          .data(causesHalf1)
+          .enter().append('g')
+          .attr("class", "legendHalf1")
+          .attr("transform", function(d, i) {
+            return "translate(" + (200 + (i * 320)) + ",240)"
+          });
+
+        var keys = legendHalf1.append('rect')
           .attr("x", 0)
-          .attr("font-size", 60)
-          .attr("fill", "green")
-          .attr("font-family", "sans-serif")
-          .text("ANNUAL SALARY (USD)")
-          .attr("transform", "translate(0, 0)");
-
-        //creates salary axis
-        salSvg.append("g")
-          .style("font", "18px sans serif")
-          .attr("transform", "translate(80,980)")
-          .call(salaryAxis);
-
-        //creates mean salary bars based on data
-        var salBars = salSvg.selectAll("#bars").data(relativeMort);
-        salSvg.append("rect")
-
-        salBars.enter().append("rect")
-          .attr('y', function(d, i) {
-            return occupationTotalScale(i);
+          .attr("y", 0)
+          .attr("width", 50)
+          .attr("height", 50)
+          .style("fill", function(d) {
+            return color(d)
           })
-          .attr('x', 90)
-          .attr("height", 60)
-          .attr("width", function(d) {
-            return (meanSalaryScale(d.meanSalary));
+
+        var refs1 = ["blade.png", "fire.png", "fist.png"];
+
+        var refs2 = ["chemical.png", "cars.png", "falling.png"];
+
+        legendHalf1.append("image")
+          .attr("href", function(d, i) {
+            return refs1[i];
           })
-          .style("fill", "green")
-          .attr("rx", 8)
-          .attr("transform", "translate(0,0)");
+          .attr("width", 40)
+          .attr("transform", "translate(5,5)");
+
+        legendHalf1.append('text')
+          .attr("x", 60)
+          .attr("y", 40)
+          .text(function(d, i) {
+            return d
+          })
+          .attr("class", "textselected")
+          .style("text-anchor", "start")
+          .style("font-size", 40);
+
+        var legendHalf2 = legend2.selectAll('.legendHalf2')
+          .data(causesHalf2)
+          .enter().append('g')
+          .attr("class", "legendHalf2")
+          .attr("transform", function(d, i) {
+            return "translate(" + (200 + (i * 320)) + ",305)"
+          });
+
+        legendHalf2.append('rect')
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", 50)
+          .attr("height", 50)
+          .style("fill", function(d) {
+            return color(d)
+          });
+
+        legendHalf2.append("image")
+          .attr("href", function(d, i) {
+            return refs2[i];
+          })
+          .attr("width", 40)
+          .attr("transform", "translate(5,5)");
+
+        legendHalf2.append('text')
+          .attr("x", 60)
+          .attr("y", 40)
+          .text(function(d, i) {
+            return d
+          })
+          .attr("class", "textselected")
+          .style("text-anchor", "start")
+          .style("font-size", 40);
+
+
 
       })
     })
