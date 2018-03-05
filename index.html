@@ -473,28 +473,41 @@
         const circleType = d3.annotationCallout
 
         const circleAnnotations = [{
-          note: {
-            label: "Powered Industrial Trucks",
-            title: "#7 Most Cited OSHA Violation",
-            align: "left"
+            note: {
+              label: "Powered Industrial Trucks",
+              title: "#7 Most Cited OSHA Violation",
+              align: "left"
+            },
+            //can use x, y directly instead of data
+            y: 135,
+            x: occupationTotalScale(5) - 80,
+            dy: 80,
+            dx: -15
+          }, {
+            note: {
+              label: "Machinery And Machine Guarding",
+              title: "#8 Most Cited OSHA Violation",
+              align: "right"
+            },
+            //can use x, y directly instead of data
+            y: 135,
+            x: occupationTotalScale(5) + 35,
+            dy: 170,
+            dx: 15
           },
-          //can use x, y directly instead of data
-          y: 135,
-          x: occupationTotalScale(5) - 80,
-          dy: 80,
-          dx: -15
-        }, {
-          note: {
-            label: "Machinery And Machine Guarding",
-            title: "#8 Most Cited OSHA Violation",
-            align: "right"
-          },
-          //can use x, y directly instead of data
-          y: 135,
-          x: occupationTotalScale(5) + 35,
-          dy: 170,
-          dx: 15
-        }];
+          {
+            note: {
+              label: "Falls & Slips",
+              title: "#1, 3, 9 Most Cited OSHA Violation",
+              align: "left"
+            },
+            //can use x, y directly instead of data
+            y: 135,
+            x: occupationTotalScale(4) - 80,
+            dy: 180,
+            dx: 100
+          }
+        ];
 
         const makeCircleAnnotations = d3.annotation()
           .editMode(true)
@@ -518,7 +531,7 @@
           .enter().append('g')
           .attr("class", "legendHalf1")
           .attr("transform", function(d, i) {
-            return "translate(" + (100 + (i * 320)) + ",240)"
+            return "translate(" + (50 + (i * 320)) + ",240)"
           });
 
         var keys = legendHalf1.append('rect')
@@ -556,7 +569,7 @@
           .enter().append('g')
           .attr("class", "legendHalf2")
           .attr("transform", function(d, i) {
-            return "translate(" + (100 + (i * 320)) + ",305)"
+            return "translate(" + (50 + (i * 320)) + ",305)"
           });
 
         legendHalf2.append('rect')
