@@ -326,7 +326,7 @@
 
         // d3.annotation annotating the bars
         // Edited usage example from http://d3-annotation.susielu.com
-        const type = d3.annotationCallout
+        const type = d3.annotationCalloutElbow
 
         const annotations = [];
 
@@ -431,7 +431,8 @@
             .attr("width", 150)
             .attr("height", 150)
             .attr("x", occupationTotalScale(i) - 100)
-            .attr("y", 50);
+            .attr("y", 50)
+            .attr("title", "circle" + i);
 
           //Creates a arc for each cause of death used in pie
           var g = box.selectAll(".arc")
@@ -465,7 +466,46 @@
             .attr("y", 24)
             .attr("x", 100 + (195 * i))
             .text(d[6].value.substr(lineBreak + 1, d[6].value.length - lineBreak - 13));
-        })
+        });
+
+        // d3.annotation annotating the circle
+        // Edited usage example from http://d3-annotation.susielu.com
+        const circleType = d3.annotationCallout
+
+        const circleAnnotations = [{
+          note: {
+            label: "Powered Industrial Trucks",
+            title: "#7 Most Cited OSHA Violation",
+            align: "left"
+          },
+          //can use x, y directly instead of data
+          y: 135,
+          x: occupationTotalScale(5) - 80,
+          dy: 80,
+          dx: -15
+        }, {
+          note: {
+            label: "Machinery And Machine Guarding",
+            title: "#8 Most Cited OSHA Violation",
+            align: "right"
+          },
+          //can use x, y directly instead of data
+          y: 135,
+          x: occupationTotalScale(5) + 35,
+          dy: 170,
+          dx: 15
+        }];
+
+        const makeCircleAnnotations = d3.annotation()
+          .editMode(true)
+          .type(circleType)
+          .annotations(circleAnnotations)
+
+        d3.select("#legend")
+          .append("g")
+          .attr("class", "annotation-group")
+          .call(makeCircleAnnotations)
+
         var causesHalf1 = causes.filter(function(d, i) {
           return i < 3;
         });
@@ -478,7 +518,7 @@
           .enter().append('g')
           .attr("class", "legendHalf1")
           .attr("transform", function(d, i) {
-            return "translate(" + (200 + (i * 320)) + ",240)"
+            return "translate(" + (100 + (i * 320)) + ",240)"
           });
 
         var keys = legendHalf1.append('rect')
@@ -516,7 +556,7 @@
           .enter().append('g')
           .attr("class", "legendHalf2")
           .attr("transform", function(d, i) {
-            return "translate(" + (200 + (i * 320)) + ",305)"
+            return "translate(" + (100 + (i * 320)) + ",305)"
           });
 
         legendHalf2.append('rect')
