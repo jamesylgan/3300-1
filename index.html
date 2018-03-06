@@ -55,7 +55,7 @@
 
     //skull image next to title
     textSvg.append("image")
-      .attr("href", "skull.png")
+      .attr("href", "images/skull.png")
       .attr("width", 70)
       .attr("x", textSvg.attr("width") / 2 + 420)
       .attr("y", 10);
@@ -309,9 +309,9 @@
               return colorScale(d)
             })
 
-          var refs1 = ["blade.png", "fire.png", "fist.png"];
+          var refs1 = ["images/blade.png", "images/fire.png", "images/fist.png"];
 
-          var refs2 = ["chemical.png", "cars.png", "falling.png"];
+          var refs2 = ["images/chemical.png", "images/cars.png", "images/falling.png"];
 
           legendHalf1.append("image")
             .attr("href", function(d, i) {
@@ -659,7 +659,7 @@
           "");
         //skull image next to title
         safeTitle.append("image")
-          .attr("href", "safe.png")
+          .attr("href", "images/safe.png")
           .attr("width", 70)
           .attr("x", safeTitle.attr("width") / 2 + 300)
           .attr("y", 60);
