@@ -172,7 +172,7 @@
     displayLabels("bar_graph", 220, 15, 20, "DEATHS OUT OF iOO,OOO", "");
 
     //Parses employment csv file to get occupations, employment, and salaries
-    d3.csv("2016_employment.csv", parseLine, function(error, data) {
+    d3.csv("data/2016_employment.csv", parseLine, function(error, data) {
       rawData = data;
 
       var allEmployment = data.filter(function(obj) {
@@ -221,7 +221,7 @@
 
       //Parses mortality csv to retrieve mortality rate for each occupation and separate total
       //into different causes.
-      d3.csv("2016_mortality.csv", parseLineMort, function(error, data) {
+      d3.csv("data/2016_mortality.csv", parseLineMort, function(error, data) {
         rawDataMort = data;
 
         majorDataMort = data.filter(function(obj) {
