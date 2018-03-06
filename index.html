@@ -33,6 +33,7 @@
 
 <body>
   <!-- Bar graph, title, and occupation labels of the "most dangerous jobs" section -->
+  <svg id="projectTitle" width=1200 height=220></svg>
   <svg id="title" width=1200 height=120></svg>
   <svg id="barGraph" width=1200 height=500>
     </svg>
@@ -54,7 +55,7 @@
       d3.select("#" + id).append("path").attr("d", pathEl).attr("fill", color);
     }
 
-    //function for creating gradients with startColor and endColor and a certain orientation
+    //Function for creating gradients with startColor and endColor and a certain orientation
     function createGradient(startColor, endColor, orientation, id) {
       var gradient;
       if (orientation == "vertical") {
@@ -64,8 +65,7 @@
           .attr("x2", "0%")
           .attr("y1", "0%")
           .attr("y2", "100%");
-      }
-      else if (orientation == "horizontal") {
+      } else if (orientation == "horizontal") {
         gradient = defs.append("linearGradient")
           .attr("id", id)
           .attr("x1", "0%")
@@ -111,11 +111,9 @@
 
     //Retrieves first half of the causes
     var causesHalf1 = causes.slice(0, 3);
-    console.log(causes);
 
     //Retrieves second half of the causes
     var causesHalf2 = causes.slice(3, 6);
-    console.log(causes);
 
     //Function to change key names when parsing csv into objects for employment
     function parseLine(line) {
@@ -138,7 +136,8 @@
 
     //Displays text labels with given parameters
     function displayLabels(svgId, x, y, font_size, text, transform) {
-      d3.select("#" + svgId).append("text").attr("text-anchor", "middle")
+      d3.select("#" + svgId).append("text")
+        .attr("text-anchor", "middle")
         .attr("x", x)
         .attr("y", y)
         .attr("font-size", font_size)
@@ -152,10 +151,28 @@
     var svgWidth = Number(svg.style("width").substring(0, svg.style("width").length - 2));
     var svgHeight = Number(svg.style("height").substring(0, svg.style("height").length - 2));
 
-    //Title of data visualization
+    //Title of entire project
+    d3.select("#projectTitle").append("text").attr("text-anchor", "middle")
+      .attr("x", (svg.attr("width") / 2))
+      .attr("y", 70)
+      .attr("font-size", 70)
+      .attr("fill", "#670606")
+      .attr("font-family", "Helvetica")
+      .attr("transform", "")
+      .text("Does A Risk Premium Exist?");
+    d3.select("#projectTitle").append("text").attr("text-anchor", "middle")
+      .attr("x", (svg.attr("width") / 2))
+      .attr("y", 140)
+      .attr("font-size", 32)
+      .attr("fill", "#670606")
+      .attr("font-family", "Helvetica")
+      .attr("transform", "")
+      .text("by James Gan, Cynthia Zhao, and Ryan Davila");
+
+    //Title of data visualization part 1
     displayLabels("title", (svg.attr("width") / 2 - 40), 70, 70, "MOST DANGEROUS JOBS IN AMERICA", "")
 
-    //skull image next to title
+    //Skull image next to title
     textSvg.append("image")
       .attr("href", "images/skull.png")
       .attr("width", 70)
@@ -168,6 +185,9 @@
 
     //Displays label for units of y-axis for bar graph of "most dangerous jobs" section
     displayLabels("barGraph", 220, 18, 20, "DEATHS OUT OF iOO,OOO", "");
+
+    //Displays label for units of x-axis for bar graph of "most dangerous jobs" section
+    displayLabels("barGraph", 1080, 489, 20, "SALARY", "");
 
     //Parses employment csv file to get occupations, employment, and salaries
     d3.csv("data/2016_employment.csv", parseLine, function(error, data) {
@@ -659,7 +679,7 @@
           "rotate(270, 40, +" + (svg.attr("height") / 2) + ")");
 
         //Label for bar-graph y-axis
-        displayLabels("safeBars", 220,18, 20, "DEATHS OUT OF iOO,OOO", "");
+        displayLabels("safeBars", 220, 18, 20, "DEATHS OUT OF iOO,OOO", "");
 
         displayLabels("safeTitle", svg.attr("width") / 2 - 40, 120, 70, "SAFEST JOBS IN AMERICA",
           "");
