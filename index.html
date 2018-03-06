@@ -25,6 +25,10 @@
     border: solid #ccc 1px;
     background-color: rgb(230, 230, 230);
   }
+
+  .annotation-note-bg {
+    fill: rgba(0, 0, 0, 0);
+  }
 </style>
 
 <body>
@@ -361,8 +365,8 @@
             .style("font-size", 30);
         }
 
-        function addBarGraph(barGraphSvgId, labelSvgId, legendId, data, maxDeaths, tickArray, annotationSpacing) {
-          data = data.sort(function (x,y) {
+        function addBarGraph(barGraphSvgId, labelSvgId, legendId, data, maxDeaths, tickArray) {
+          data = data.sort(function(x, y) {
             return x.meanSalary - y.meanSalary;
           })
           var barGraphSvg = d3.select("#" + barGraphSvgId);
@@ -446,18 +450,30 @@
           var annotations = [];
 
           data.forEach(function(d, i) {
-            if (i < 5) {
+            if (i < 4) {
               annotations.push({
                 note: {
                   label: "$" + d.meanSalary,
                   title: "Average Salary"
                 },
                 //can use x, y directly instead of data
-                y: mortalityScale(d.rate) + 40,
+                y: mortalityScale(d.rate) + 20,
                 x: occupationTotalScale(i) + 40,
-                dy: -50 - (2.5 * annotationSpacing) + (i * (-30 + (annotationSpacing * 1.1))),
-                dx: 25
+                dy: -(mortalityScale(d.rate) + 20) + 70,
+                dx: 45
               });
+            } else if (i == 4) {
+              annotations.push({
+                note: {
+                  label: "$" + d.meanSalary,
+                  title: "Average Salary"
+                },
+                //can use x, y directly instead of data
+                y: mortalityScale(d.rate) + 20,
+                x: occupationTotalScale(i) + 40,
+                dy: -(mortalityScale(d.rate) + 20) + 70,
+                dx: 0
+              })
             } else {
               annotations.push({
                 note: {
@@ -465,10 +481,10 @@
                   title: "Average Salary"
                 },
                 //can use x, y directly instead of data
-                y: mortalityScale(d.rate) + 40 - annotationSpacing,
+                y: mortalityScale(d.rate) + 20,
                 x: occupationTotalScale(i) + 40,
-                dy: -50,
-                dx: -50
+                dy: -(mortalityScale(d.rate) + 20) + 70,
+                dx: -5
               });
             }
           });
@@ -543,7 +559,7 @@
 
             //Prints the first line of the occupation title
             labelSvg.append("text").attr("text-anchor", "middle")
-              .attr("x", occupationTotalScale(i)+40)
+              .attr("x", occupationTotalScale(i) + 40)
               .attr("y", 12)
               .attr("fill", "#670606")
               .attr("font-family", "Impact")
@@ -552,7 +568,7 @@
 
             //Prints the second line of the occupation title
             labelSvg.append("text").attr("text-anchor", "middle")
-              .attr("x", occupationTotalScale(i)+40)
+              .attr("x", occupationTotalScale(i) + 40)
               .attr("y", 26)
               .attr("fill", "#670606")
               .attr("font-family", "Impact")
@@ -597,7 +613,7 @@
               y: 115,
               x: occupationTotalScale(5) - 25,
               dy: 150,
-              dx: 55
+              dx: 45
             }];
 
             const makeCircleAnnotations = d3.annotation()
@@ -612,7 +628,7 @@
           createLegend(legendId);
         }
 
-        addBarGraph("bar_graph", "labels", "legend", highest, 60, [0, 10, 20, 30, 40, 50], 0);
+        addBarGraph("bar_graph", "labels", "legend", highest, 60, [0, 10, 20, 30, 40, 50]);
 
         d3.select("body").append("svg")
           .attr("width", 1200)
@@ -631,7 +647,7 @@
 
         var safeTitle = d3.select("#safeTitle");
 
-        addBarGraph("safeBars", "safeLabels", "safeLegend", lowest, 1.2, [0.2, 0.4, 0.6, 0.8, 1.0], 20);
+        addBarGraph("safeBars", "safeLabels", "safeLegend", lowest, 1.2, [0.2, 0.4, 0.6, 0.8, 1.0]);
 
         displayLabels("safeBars", 40, svg.attr("height") / 2, 30, "TOTAL MORTALITY",
           "rotate(270, 40, +" + (svg.attr("height") / 2) + ")");
