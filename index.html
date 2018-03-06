@@ -157,15 +157,16 @@
       .attr("y", 70)
       .attr("font-size", 70)
       .attr("fill", "#670606")
-      .attr("font-family", "Helvetica")
+      .attr("font-family", "Courier")
       .attr("transform", "")
       .text("Does A Risk Premium Exist?");
+
     d3.select("#projectTitle").append("text").attr("text-anchor", "middle")
       .attr("x", (svg.attr("width") / 2))
       .attr("y", 140)
       .attr("font-size", 32)
       .attr("fill", "#670606")
-      .attr("font-family", "Helvetica")
+      .attr("font-family", "Courier")
       .attr("transform", "")
       .text("by James Gan, Cynthia Zhao, and Ryan Davila");
 
@@ -176,7 +177,7 @@
     textSvg.append("image")
       .attr("href", "images/skull.png")
       .attr("width", 70)
-      .attr("x", textSvg.attr("width") / 2 + 420)
+      .attr("x", textSvg.attr("width") / 2 + 470)
       .attr("y", 10);
 
     //Displays "Total Mortality" title for y-axis of "most dangerous jobs" section
@@ -187,7 +188,7 @@
     displayLabels("barGraph", 220, 18, 20, "DEATHS OUT OF iOO,OOO", "");
 
     //Displays label for units of x-axis for bar graph of "most dangerous jobs" section
-    displayLabels("barGraph", 1080, 489, 20, "SALARY", "");
+    displayLabels("barGraph", 1200, 489, 20, "SALARY", "");
 
     //Parses employment csv file to get occupations, employment, and salaries
     d3.csv("data/2016_employment.csv", parseLine, function(error, data) {
@@ -690,7 +691,7 @@
         safeTitle.append("image")
           .attr("href", "images/safe.png")
           .attr("width", 70)
-          .attr("x", safeTitle.attr("width") / 2 + 300)
+          .attr("x", safeTitle.attr("width") / 2 + 350)
           .attr("y", 60);
       })
     })
