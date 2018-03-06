@@ -34,7 +34,7 @@
 <body>
   <!-- Bar graph, title, and occupation labels of the "most dangerous jobs" section -->
   <svg id="title" width=1200 height=120></svg>
-  <svg id="barGraph" width=1200 height=500>
+  <svg id="barGraph" width=1300 height=500>
     </svg>
   <svg id="labels" width=1210 height=50>
   </svg>
@@ -413,7 +413,7 @@
           mortalityScale = d3.scaleLinear().domain([0, maxDeaths]).range([svgHeight - 70, 90]);
 
           //X-axis scale
-          occupationScale = d3.scaleLinear().domain([0, data.length - 1]).range([130, svgWidth - 120]);
+          occupationScale = d3.scaleLinear().domain([0, data.length - 1]).range([130, svgWidth - 220]);
 
           //Maps each cause of death to a color
           colorScale = d3.scaleOrdinal()
@@ -421,7 +421,7 @@
             .range(["#daa520", "#f0714d", "rgb(200,0,0)", "#90007d", "#d73b65", "#8b0000"]);
 
           //Creates horizontal grid lines
-          var mortalityAxis = d3.axisLeft(mortalityScale).tickSize(-(svgWidth - 150)).tickValues(tickArray);
+          var mortalityAxis = d3.axisLeft(mortalityScale).tickSize(-(svgWidth - 250)).tickValues(tickArray);
 
           //Appends grid lines
           barGraphSvg.append("g")
@@ -505,9 +505,9 @@
 
           //Triangles representing arrows for end of axis
           var triangleOne = [
-            [svgWidth - 80, svgHeight],
-            [svgWidth, svgHeight - 50],
-            [svgWidth - 80, svgHeight - 100]
+            [svgWidth - 180, svgHeight],
+            [svgWidth-100, svgHeight - 50],
+            [svgWidth - 180, svgHeight - 100]
           ];
           var triangleTwo = [
             [60, 100],
@@ -522,7 +522,7 @@
           barGraphSvg.append("rect")
             .attr("x", 90)
             .attr("y", svgHeight - 70)
-            .attr("width", svgWidth - 150)
+            .attr("width", svgWidth - 250)
             .attr("height", 40)
             .attr("fill", "url(#svgGradient)");
 
@@ -642,7 +642,7 @@
           .attr("id", "safeTitle");
 
         d3.select("body").append("svg")
-          .attr("width", 1200)
+          .attr("width", 1300)
           .attr("height", 500)
           .attr("id", "safeBars");
 
