@@ -135,12 +135,12 @@
     }
 
     //Displays text labels with given parameters
-    function displayLabels(svgId, x, y, font_size, text, transform) {
+    function displayLabels(svgId, x, y, fontSize, text, transform) {
       d3.select("#" + svgId).append("text")
         .attr("text-anchor", "middle")
         .attr("x", x)
         .attr("y", y)
-        .attr("font-size", font_size)
+        .attr("font-size", fontSize)
         .attr("fill", "#670606")
         .attr("font-family", "Pedra")
         .attr("transform", transform)
