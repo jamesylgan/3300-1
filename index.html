@@ -25,18 +25,22 @@
     border: solid #ccc 1px;
     background-color: rgb(230, 230, 230);
   }
+
+  .annotation-note-bg {
+    fill: rgba(0, 0, 0, 0);
+  }
 </style>
 
 <body>
   <!-- Bar graph, title, and occupation labels of the "most dangerous jobs" section -->
   <svg id="title" width=1200 height=120></svg>
-  <svg id="bar_graph" width=1200 height=500>
+  <svg id="barGraph" width=1200 height=500>
     </svg>
   <svg id="labels" width=1210 height=50>
   </svg>
 
   <script>
-    var svg = d3.select("#bar_graph");
+    var svg = d3.select("#barGraph");
     var textSvg = d3.select("#title");
     var labelSvg = d3.select("#labels");
 
@@ -159,11 +163,11 @@
       .attr("y", 10);
 
     //Displays "Total Mortality" title for y-axis of "most dangerous jobs" section
-    displayLabels("bar_graph", 40, svg.attr("height") / 2, 30, "TOTAL MORTALITY",
+    displayLabels("barGraph", 40, svg.attr("height") / 2, 30, "TOTAL MORTALITY",
       "rotate(270, 40, +" + (svg.attr("height") / 2) + ")");
 
     //Displays label for units of y-axis for bar graph of "most dangerous jobs" section
-    displayLabels("bar_graph", 220, 15, 20, "DEATHS OUT OF iOO,OOO", "");
+    displayLabels("barGraph", 220, 18, 20, "DEATHS OUT OF iOO,OOO", "");
 
     //Parses employment csv file to get occupations, employment, and salaries
     d3.csv("2016_employment.csv", parseLine, function(error, data) {
@@ -289,8 +293,8 @@
           var legend = d3.select("#" + donutId)
 
           // File names containing images for each cause of death
-          var refs1 = ["blade.png", "fire.png", "fist.png"];
-          var refs2 = ["chemical.png", "cars.png", "falling.png"];
+          var refs1 = ["images/blade.png", "images/fire.png", "images/fist.png"];
+          var refs2 = ["images/chemical.png", "images/cars.png", "images/falling.png"];
 
           // Appends an element for each of the first three causes
           var legendHalf1 = legend.selectAll(".legendHalf1")
@@ -365,9 +369,9 @@
         }
 
         /* Generates the bar graph and donut graphs with a legend for the given svgs and data*/
-        function addCharts(barGraphSvgId, labelSvgId, legendId, data, maxDeaths, tickArray, annotationSpacing) {
+        function addCharts(barGraphSvgId, labelSvgId, legendId, data, maxDeaths, tickArray) {
           //Sorts data from smallest salary to greatest salary
-          data = data.sort(function (x,y) {
+          data = data.sort(function(x, y) {
             return x.meanSalary - y.meanSalary;
           })
 
@@ -451,18 +455,30 @@
           var annotations = [];
 
           data.forEach(function(d, i) {
-            if (i < 5) {
+            if (i < 4) {
               annotations.push({
                 note: {
                   label: "$" + d.meanSalary,
                   title: "Average Salary"
                 },
                 //can use x, y directly instead of data
-                y: mortalityScale(d.rate) + 40,
+                y: mortalityScale(d.rate) + 20,
                 x: occupationScale(i) + 40,
-                dy: -50 - (2.5 * annotationSpacing) + (i * (-30 + (annotationSpacing * 1.1))),
-                dx: 25
+                dy: -(mortalityScale(d.rate) + 20) + 70,
+                dx: 45
               });
+            } else if (i == 4) {
+              annotations.push({
+                note: {
+                  label: "$" + d.meanSalary,
+                  title: "Average Salary"
+                },
+                //can use x, y directly instead of data
+                y: mortalityScale(d.rate) + 20,
+                x: occupationScale(i) + 40,
+                dy: -(mortalityScale(d.rate) + 20) + 70,
+                dx: 0
+              })
             } else {
               annotations.push({
                 note: {
@@ -470,10 +486,10 @@
                   title: "Average Salary"
                 },
                 //can use x, y directly instead of data
-                y: mortalityScale(d.rate) + 40 - annotationSpacing,
+                y: mortalityScale(d.rate) + 20,
                 x: occupationScale(i) + 40,
-                dy: -50,
-                dx: -50
+                dy: -(mortalityScale(d.rate) + 20) + 70,
+                dx: -5
               });
             }
           });
@@ -549,7 +565,7 @@
 
             //Displays the first line of the occupation title
             labelSvg.append("text").attr("text-anchor", "middle")
-              .attr("x", occupationScale(i)+40)
+              .attr("x", occupationScale(i) + 40)
               .attr("y", 12)
               .attr("fill", "#670606")
               .attr("font-family", "Impact")
@@ -558,7 +574,7 @@
 
             //Displays the second line of the occupation title
             labelSvg.append("text").attr("text-anchor", "middle")
-              .attr("x", occupationScale(i)+40)
+              .attr("x", occupationScale(i) + 40)
               .attr("y", 26)
               .attr("fill", "#670606")
               .attr("font-family", "Impact")
@@ -603,7 +619,7 @@
               y: 115,
               x: occupationScale(5) - 25,
               dy: 150,
-              dx: 55
+              dx: 45
             }];
 
             const makeCircleAnnotations = d3.annotation()
@@ -618,7 +634,7 @@
           createLegend(legendId);
         }
 
-        addCharts("bar_graph", "labels", "legend", highest, 60, [0, 10, 20, 30, 40, 50], 0);
+        addCharts("barGraph", "labels", "legend", highest, 60, [0, 10, 20, 30, 40, 50]);
 
         d3.select("body").append("svg")
           .attr("width", 1200)
@@ -637,19 +653,19 @@
 
         var safeTitle = d3.select("#safeTitle");
 
-        addCharts("safeBars", "safeLabels", "safeLegend", lowest, 1.2, [0.2, 0.4, 0.6, 0.8, 1.0], 20);
+        addCharts("safeBars", "safeLabels", "safeLegend", lowest, 1.2, [0.2, 0.4, 0.6, 0.8, 1.0]);
 
         displayLabels("safeBars", 40, svg.attr("height") / 2, 30, "TOTAL MORTALITY",
           "rotate(270, 40, +" + (svg.attr("height") / 2) + ")");
 
         //Label for bar-graph y-axis
-        displayLabels("safeBars", 220, 18, 20, "DEATHS OUT OF iOO,OOO", "");
+        displayLabels("safeBars", 220,18, 20, "DEATHS OUT OF iOO,OOO", "");
 
         displayLabels("safeTitle", svg.attr("width") / 2 - 40, 120, 70, "SAFEST JOBS IN AMERICA",
           "");
-        //skull image next to title
+        //shield image next to title
         safeTitle.append("image")
-          .attr("href", "safe.png")
+          .attr("href", "images/safe.png")
           .attr("width", 70)
           .attr("x", safeTitle.attr("width") / 2 + 300)
           .attr("y", 60);
