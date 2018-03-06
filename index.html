@@ -31,7 +31,7 @@
   <svg id="title" width=1200 height=120></svg>
   <svg id="bar_graph" width=1200 height=500 overflow="visible">
     </svg>
-  <svg id="labels" width=1200 height=50>
+  <svg id="labels" width=1210 height=50>
   </svg>
   <script>
     var svg = d3.select("#bar_graph");
@@ -116,7 +116,7 @@
 
     var pies;
 
-    var causes = ["Harmful Contact", "Combustion", "Violence", "Harmful Exposure", "Transportation", "Falls"];
+    var causes = ["Harmful Contact", "Fire", "Violence", "Harmful Exposure", "Transportation", "Falls"];
 
     var causesHalf1 = causes.filter(function(d, i) {
       return i < 3;
@@ -267,8 +267,8 @@
           var box = legend.append("svg")
             .attr("width", 150)
             .attr("height", 150)
-            .attr("x", occupationTotalScale(index) - 40)
-            .attr("y", 30)
+            .attr("x", occupationTotalScale(index) - 50)
+            .attr("y", 15)
             .attr("title", "circle" + index);
 
           //Creates a arc for each cause of death used in pie
@@ -293,7 +293,7 @@
             .enter().append('g')
             .attr("class", "legendHalf1")
             .attr("transform", function(d, i) {
-              return "translate(" + (100 + (i * 320)) + ",240)"
+              return "translate(" + (250 + (i * 320)) + ",220)"
             });
 
           var keys = legendHalf1.append('rect')
@@ -324,14 +324,14 @@
             })
             .attr("class", "textselected")
             .style("text-anchor", "start")
-            .style("font-size", 40);
+            .style("font-size", 30);
 
           var legendHalf2 = legend.selectAll('.legendHalf2')
             .data(causesHalf2)
             .enter().append('g')
             .attr("class", "legendHalf2")
             .attr("transform", function(d, i) {
-              return "translate(" + (100 + (i * 320)) + ",305)"
+              return "translate(" + (250 + (i * 320)) + ",305)"
             });
 
           legendHalf2.append('rect')
@@ -340,7 +340,7 @@
             .attr("width", 50)
             .attr("height", 50)
             .style("fill", function(d) {
-              return colorScale(d)
+              return colorScale(d);
             });
 
           legendHalf2.append("image")
@@ -358,10 +358,13 @@
             })
             .attr("class", "textselected")
             .style("text-anchor", "start")
-            .style("font-size", 40);
+            .style("font-size", 30);
         }
 
         function addBarGraph(barGraphSvgId, labelSvgId, legendId, data, maxDeaths, tickArray, annotationSpacing) {
+          data = data.sort(function (x,y) {
+            return x.meanSalary - y.meanSalary;
+          })
           var barGraphSvg = d3.select("#" + barGraphSvgId);
           var labelSvg = d3.select("#" + labelSvgId);
           //Creates list of key and values for each pie chart
@@ -533,14 +536,14 @@
             createCircles(legendId, pie, d, i);
 
             //Determines where to start a new line
-            var lineBreak = d[6].value.indexOf(" ", 20);
+            var lineBreak = d[6].value.indexOf(" ", 15);
             if (lineBreak == -1) {
               lineBreak = d[6].value.length - 11;
             };
 
             //Prints the first line of the occupation title
-            labelSvg.append("text")
-              .attr("x", 125 + (185 * i))
+            labelSvg.append("text").attr("text-anchor", "middle")
+              .attr("x", occupationTotalScale(i)+40)
               .attr("y", 12)
               .attr("fill", "#670606")
               .attr("font-family", "Impact")
@@ -548,8 +551,8 @@
               .text(d[6].value.substr(0, lineBreak).toUpperCase());
 
             //Prints the second line of the occupation title
-            labelSvg.append("text")
-              .attr("x", 125 + (185 * i))
+            labelSvg.append("text").attr("text-anchor", "middle")
+              .attr("x", occupationTotalScale(i)+40)
               .attr("y", 26)
               .attr("fill", "#670606")
               .attr("font-family", "Impact")
@@ -569,10 +572,10 @@
                 align: "left"
               },
               //can use x, y directly instead of data
-              y: 120,
-              x: occupationTotalScale(5) - 20,
+              y: 125,
+              x: occupationTotalScale(0) - 20,
               dy: 80,
-              dx: -15
+              dx: -30
             }, {
               note: {
                 label: "Machinery And Machine Guarding",
@@ -581,9 +584,9 @@
               },
               //can use x, y directly instead of data
               y: 120,
-              x: occupationTotalScale(5) + 90,
-              dy: 170,
-              dx: 15
+              x: occupationTotalScale(0) + 75,
+              dy: 180,
+              dx: 25
             }, {
               note: {
                 label: "Falls & Slips",
@@ -591,9 +594,9 @@
                 align: "left"
               },
               //can use x, y directly instead of data
-              y: 110,
-              x: occupationTotalScale(4) - 15,
-              dy: 180,
+              y: 115,
+              x: occupationTotalScale(5) - 25,
+              dy: 150,
               dx: 55
             }];
 
@@ -622,7 +625,7 @@
           .attr("id", "safeBars");
 
         d3.select("body").append("svg")
-          .attr("width", 1200)
+          .attr("width", 1210)
           .attr("height", 50)
           .attr("id", "safeLabels");
 
@@ -634,7 +637,7 @@
           "rotate(270, 40, +" + (svg.attr("height") / 2) + ")");
 
         //Label for bar-graph y-axis
-        displayLabels("safeBars", 220, 15, 20, "DEATHS OUT OF iOO,OOO", "");
+        displayLabels("safeBars", 220, 18, 20, "DEATHS OUT OF iOO,OOO", "");
 
         displayLabels("safeTitle", svg.attr("width") / 2 - 40, 120, 70, "SAFEST JOBS IN AMERICA",
           "");
